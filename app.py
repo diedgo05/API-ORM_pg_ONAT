@@ -3,14 +3,16 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_jwt_extended import JWTManager
 from config import config
 from src.routes.userRoutes import usuario_blueprint
+from src.routes.organizationsRoutes import organizacion_blueprint
 from src.models.user import db
+from src.models.organizations import db
 
 def create_app():
     app = Flask(__name__)
     app.config.from_object(config['development'])
     db.init_app(app)
     jwt = JWTManager(app)
-    app.register_blueprint(usuario_blueprint)
+    app.register_blueprint(organizacion_blueprint)
     return app
 
 if __name__ == '__main__':
