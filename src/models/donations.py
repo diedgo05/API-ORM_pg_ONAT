@@ -1,11 +1,11 @@
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
+from src.models import db
 from dotenv import load_dotenv
 import os
 
 from sqlalchemy import ForeignKey
 
-db  = SQLAlchemy()
 bcrypt = Bcrypt()
 load_dotenv()
 
@@ -20,7 +20,7 @@ class Donations(db.Model):
     correo = db.Column(db.String(50), nullable = False, unique = True)
     nacionalidad = db.Column(db.String(50), nullable = False)
     cantidad = db.Column(db.Float, nullable = False)
-    id_org = db.Column(db.Integer, ForeignKey('organizations.id'))
+    id_org = db.Column(db.Integer, ForeignKey(f'{schema_name}.organizations.id'))
 
     def __init__(self, nombre, apellido_m, apellido_p, correo, nacionalidad, cantidad, id_org):
         self.nombre = nombre

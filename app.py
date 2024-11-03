@@ -3,10 +3,8 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_jwt_extended import JWTManager
 from config import config
 from src.routes.organizationsRoutes import organizacion_blueprint
-from src.models.organizations import db
-from src.models.donations import db
 from src.routes.donationsRoutes import donacion_blueprint
-
+from src.models import db
 
 def create_app():
     app = Flask(__name__)
@@ -20,4 +18,6 @@ def create_app():
 
 if __name__ == '__main__':
     app = create_app()
+    with app.app_context():
+        db.create_all()
     app.run(debug=True)

@@ -1,9 +1,9 @@
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
+from src.models import db
 from dotenv import load_dotenv
 import os
 
-db  = SQLAlchemy()
 bcrypt = Bcrypt()
 load_dotenv()
 
