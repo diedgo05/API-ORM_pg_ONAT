@@ -14,17 +14,21 @@ class Organizations(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     nombre = db.Column(db.String(50), nullable = False, unique = True)
     correo = db.Column(db.String(50), nullable = False, unique = True)
-    pais = db.Column(db.String(30), nullable = False)
+    estado = db.Column(db.String(50), nullable = False)
+    direccion = db.Column(db.String(100), nullable = False)
     rfc = db.Column(db.String(13), nullable = False, unique = True)
     telefono = db.Column(db.String(10), nullable = False, unique = True)
     contraseña = db.Column(db.String(200), nullable = False, unique = True)
+    imagen = db.Column(db.LargeBinary, nullable = False)
 
-    def __init__(self,nombre,correo,pais,rfc,telefono,contraseña):
+    def __init__(self,nombre,correo,estado,rfc,telefono,contraseña,imagen,direccion):
         self.nombre = nombre
         self.correo = correo
-        self.pais = pais
+        self.estado = estado
         self.rfc = rfc
         self.telefono = telefono
+        self.imagen = imagen
+        self.direccion = direccion
         self.contraseña = bcrypt.generate_password_hash(contraseña).decode('utf-8')
 
     def check_contraseña(self,contraseña):

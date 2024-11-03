@@ -3,10 +3,10 @@ from src.controllers.organizationController import crear_org, obtener_organizaci
 
 organizacion_blueprint = Blueprint('organizaciones', __name__)
 
+# Modificación de esta ruta para poder guardar imagenes
 @organizacion_blueprint.route('/organizaciones', methods=['POST'])
 def crear_organizacion_ruta():
-    data = request.get_json()
-    return crear_org(data)
+    return crear_org()
 
 @organizacion_blueprint.route('/obtenerOrg', methods=['GET'])
 def obtener_organizaciones_ruta():

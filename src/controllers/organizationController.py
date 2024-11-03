@@ -1,22 +1,30 @@
-from flask import jsonify
+from flask import jsonify, request
 from src.models.organizations import Organizations, db
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 
-def crear_org(data):
-    nombre = data.get('nombre')
-    correo = data.get('correo')
-    pais = data.get('pais')
-    rfc = data.get('rfc')
-    telefono = data.get('telefono')
-    contraseña = data.get('contraseña')
+# Modificación en crear una organización para permitir consultas en postman o thunderclient con form-data
+def crear_org():
+    nombre = request.form.get('nombre')
+    correo = request.form.get('correo')
+    estado = request.form.get('estado')
+    direccion = request.form.get('direccion')
+    rfc = request.form.get('rfc')
+    telefono = request.form.get('telefono')
+    contraseña = request.form.get('contraseña')
+    imagen = request.files.get('imagen')
 
-    if not nombre or not correo or not pais or not rfc or not telefono or not contraseña:
+    if not nombre or not correo or not estado or not rfc or not telefono or not contraseña:
         return jsonify({"mensaje": "Faltan campos obligatorios"}), 400
     
     if Organizations.query.filter_by(correo=correo).first():
         return jsonify({"mensaje": "El correo ya esta registrado"}), 400
     
-    nueva_org = Organizations(nombre=nombre, correo=correo, pais=pais, rfc=rfc, telefono=telefono, contraseña=contraseña) 
+    if imagen:
+        imagen_data = imagen.read()
+    else:
+        return jsonify({"mensaje": "Falta la imagen"}), 400
+    
+    nueva_org = Organizations(nombre=nombre, correo=correo, estado=estado, rfc=rfc, telefono=telefono, contraseña=contraseña, direccion=direccion, imagen=imagen_data) 
     db.session.add(nueva_org)
     db.session.commit()
 
@@ -25,13 +33,19 @@ def crear_org(data):
 def login_organizacion(data):
     correo = data.get('correo')
     contraseña = data.get('contraseña')
+    
+    if not correo or not contraseña:
+        return jsonify({"mensaje": "Faltan campos obligatorios"}), 400
+    
     organizacion = Organizations.query.filter_by(correo=correo).first()
 
     if not organizacion:
-        return jsonify({"mensaje":"Credenciales invalidas"}), 401
+        return jsonify({"mensaje": "Credenciales inválidas"}), 401
     if not organizacion.check_contraseña(contraseña):
-        access_token = create_access_token(identity=organizacion.id)
-        return jsonify({"mensaje":"Inicio de sesión exitoso", "token":access_token}), 200
+        return jsonify({"mensaje": "Credenciales inválidas"}), 401
+
+    access_token = create_access_token(identity=organizacion.id)
+    return jsonify({"mensaje": "Inicio de sesión exitoso", "token": access_token}), 200
 
 @jwt_required()
 def obtener_organizaciones():
@@ -43,7 +57,8 @@ def obtener_organizaciones():
         "id": organizacion.id,
         "nombre": organizacion.nombre,
         "correo": organizacion.correo,
-        "pais": organizacion.pais,
+        "estado": organizacion.estado,
+        "direccion": organizacion.direccion,
         "rfc": organizacion.rfc,
         "telefono": organizacion.telefono
                   }), 200
