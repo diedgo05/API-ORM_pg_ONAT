@@ -15,7 +15,7 @@ class Organizations(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nombre = db.Column(db.String(50), nullable=False, unique=True)
     correo = db.Column(db.String(50), nullable=False, unique=True)
-
+    cp = db.Column(db.Integer, nullable=False)
     estado = db.Column(db.String(50), nullable=False)
     municipio = db.Column(db.String(50), nullable=False)  
     colonia = db.Column(db.String(50), nullable=False)
@@ -26,9 +26,10 @@ class Organizations(db.Model):
     contraseña = db.Column(db.String(200), nullable=False, unique=True)
     imagen = db.Column(db.LargeBinary, nullable=False)
 
-    def __init__(self, nombre, correo, estado, municipio, colonia, rfc, telefono, contraseña, imagen, direccion):
+    def __init__(self, nombre, correo, cp, estado, municipio, colonia, rfc, telefono, contraseña, imagen, direccion):
         self.nombre = nombre
         self.correo = correo
+        self.cp = cp
         self.estado = estado
         self.municipio = municipio
         self.colonia = colonia

@@ -7,6 +7,7 @@ from src.models import db
 def crear_org():
     nombre = request.form.get('nombre')
     correo = request.form.get('correo')
+    cp = request.form.get('cp')
     estado = request.form.get('estado')
     direccion = request.form.get('direccion')
     rfc = request.form.get('rfc')
@@ -14,7 +15,7 @@ def crear_org():
     contraseña = request.form.get('contraseña')
     imagen = request.files.get('imagen')
 
-    if not nombre or not correo or not estado or not rfc or not telefono or not contraseña:
+    if not nombre or not correo or not cp or not estado or not rfc or not telefono or not contraseña:
         return jsonify({"mensaje": "Faltan campos obligatorios"}), 400
     
     if Organizations.query.filter_by(correo=correo).first():
@@ -25,7 +26,7 @@ def crear_org():
     else:
         return jsonify({"mensaje": "Falta la imagen"}), 400
     
-    nueva_org = Organizations(nombre=nombre, correo=correo, estado=estado, rfc=rfc, telefono=telefono, contraseña=contraseña, direccion=direccion, imagen=imagen_data) 
+    nueva_org = Organizations(nombre=nombre, correo=correo, cp=cp, estado=estado, rfc=rfc, telefono=telefono, contraseña=contraseña, direccion=direccion, imagen=imagen_data) 
     db.session.add(nueva_org)
     db.session.commit()
 
@@ -58,6 +59,7 @@ def obtener_organizaciones():
         "id": organizacion.id,
         "nombre": organizacion.nombre,
         "correo": organizacion.correo,
+        "cp": organizacion.cp,
         "estado": organizacion.estado,
         "direccion": organizacion.direccion,
         "rfc": organizacion.rfc,
