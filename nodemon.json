@@ -1,0 +1,6 @@
+{
+    "watch": ["*.py", "src/"],
+    "ext": "py",
+    "exec": "environment/Scripts/python app.py"
+  }
+  

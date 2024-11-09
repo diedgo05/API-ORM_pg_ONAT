@@ -1,9 +1,10 @@
 from flask import Flask, request
-from flask_sqlalchemy import SQLAlchemy
 from flask_jwt_extended import JWTManager
 from config import config
 from src.routes.organizationsRoutes import organizacion_blueprint
 from src.routes.donationsRoutes import donacion_blueprint
+from src.routes.membershipRoutes import membresias_blueprint
+from src.routes.dipomexRoutes import dipomex_blueprint
 from src.models import db
 
 def create_app():
@@ -14,6 +15,8 @@ def create_app():
 
     app.register_blueprint(donacion_blueprint)
     app.register_blueprint(organizacion_blueprint)
+    app.register_blueprint(membresias_blueprint)
+    app.register_blueprint(dipomex_blueprint)
     return app
 
 if __name__ == '__main__':

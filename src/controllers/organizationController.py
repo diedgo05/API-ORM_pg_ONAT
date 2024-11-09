@@ -1,6 +1,7 @@
 from flask import jsonify, request
-from src.models.organizations import Organizations, db
+from src.models.organizations import Organizations
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
+from src.models import db
 
 # Modificación en crear una organización para permitir consultas en postman o thunderclient con form-data
 def crear_org():
