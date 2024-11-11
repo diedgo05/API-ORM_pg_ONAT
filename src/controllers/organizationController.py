@@ -2,6 +2,8 @@ from flask import jsonify, request
 from src.models.organizations import Organizations
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 from src.models import db
+import base64;
+
 
 # Modificación en crear una organización para permitir consultas en postman o thunderclient con form-data
 def crear_org():
@@ -9,13 +11,15 @@ def crear_org():
     correo = request.form.get('correo')
     cp = request.form.get('cp')
     estado = request.form.get('estado')
+    municipio = request.form.get('municipio')
+    colonia = request.form.get('colonia')
     direccion = request.form.get('direccion')
     rfc = request.form.get('rfc')
     telefono = request.form.get('telefono')
-    contraseña = request.form.get('contraseña')
+    contrasena = request.form.get('contrasena')
     imagen = request.files.get('imagen')
 
-    if not nombre or not correo or not cp or not estado or not rfc or not telefono or not contraseña:
+    if not nombre :
         return jsonify({"mensaje": "Faltan campos obligatorios"}), 400
     
     if Organizations.query.filter_by(correo=correo).first():
@@ -26,7 +30,7 @@ def crear_org():
     else:
         return jsonify({"mensaje": "Falta la imagen"}), 400
     
-    nueva_org = Organizations(nombre=nombre, correo=correo, cp=cp, estado=estado, rfc=rfc, telefono=telefono, contraseña=contraseña, direccion=direccion, imagen=imagen_data) 
+    nueva_org = Organizations(nombre=nombre, correo=correo, cp=cp, estado=estado, rfc=rfc, telefono=telefono, contrasena=contrasena, direccion=direccion,colonia=colonia,municipio=municipio, imagen=imagen_data) 
     db.session.add(nueva_org)
     db.session.commit()
 
@@ -34,16 +38,16 @@ def crear_org():
 
 def login_organizacion(data):
     correo = data.get('correo')
-    contraseña = data.get('contraseña')
+    contrasena = data.get('contrasena')
     
-    if not correo or not contraseña:
+    if not correo or not contrasena:
         return jsonify({"mensaje": "Faltan campos obligatorios"}), 400
     
     organizacion = Organizations.query.filter_by(correo=correo).first()
 
     if not organizacion:
         return jsonify({"mensaje": "Credenciales inválidas"}), 401
-    if not organizacion.check_contraseña(contraseña):
+    if not organizacion.check_contrasena(contrasena):
         return jsonify({"mensaje": "Credenciales inválidas"}), 401
 
     access_token = create_access_token(identity=organizacion.id)
@@ -53,6 +57,11 @@ def login_organizacion(data):
 def obtener_organizaciones():
     organizacion_id = get_jwt_identity()
     organizacion = Organizations.query.get(organizacion_id)
+
+    imagen_base64 = None
+    if organizacion.imagen:
+        imagen_base64 = base64.b64encode(organizacion.imagen).decode('utf-8')
+
     if not organizacion:
         return jsonify({"mensaje": "Organizaciones no encontradas"}), 404
     return jsonify({
@@ -63,7 +72,8 @@ def obtener_organizaciones():
         "estado": organizacion.estado,
         "direccion": organizacion.direccion,
         "rfc": organizacion.rfc,
-        "telefono": organizacion.telefono
+        "telefono": organizacion.telefono,
+        "imagen": imagen_base64
                   }), 200
 
 @jwt_required()
@@ -93,11 +103,18 @@ def actualizar_organizaciones(id, data):
     db.session.commit()
 
     return jsonify({
-        "mensaje":"Datos de la organización actualizadas correctamente",
-        "id":organizacion.id,
-        "nombre":organizacion.nombre,
-        "correo":organizacion.correo,
-        "telefono":organizacion.telefono}), 200
+        "id": organizacion.id,
+        "nombre": organizacion.nombre,
+        "correo": organizacion.correo,
+        "cp": organizacion.cp,
+        "estado": organizacion.estado,
+        "municipio": organizacion.municipio,
+        "colonia": organizacion.colonia,
+        "direccion": organizacion.direccion,
+        "rfc": organizacion.rfc,
+        "telefono": organizacion.telefono,
+        "imagen": organizacion.imagen.decode('utf-8') if organizacion.imagen else None  
+    }), 200
 
 # Voy a crear este controlador, pero no se si es necesario (eliminar)
 @jwt_required()

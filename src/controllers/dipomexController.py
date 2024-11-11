@@ -11,7 +11,6 @@ def get_cp():
             f'https://api.tau.com.mx/dipomex/v1/codigo_postal?cp={cp}',
             headers={'APIKEY': key}
         )
-
         data = response.json()
 
         if not data.get('error'):

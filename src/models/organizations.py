@@ -15,6 +15,7 @@ class Organizations(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nombre = db.Column(db.String(50), nullable=False, unique=True)
     correo = db.Column(db.String(50), nullable=False, unique=True)
+    
     cp = db.Column(db.Integer, nullable=False)
     estado = db.Column(db.String(50), nullable=False)
     municipio = db.Column(db.String(50), nullable=False)  
@@ -23,10 +24,10 @@ class Organizations(db.Model):
     direccion = db.Column(db.String(100), nullable=False)
     rfc = db.Column(db.String(13), nullable=False, unique=True)
     telefono = db.Column(db.String(10), nullable=False, unique=True)
-    contraseña = db.Column(db.String(200), nullable=False, unique=True)
+    contrasena = db.Column(db.String(200), nullable=False, unique=True)
     imagen = db.Column(db.LargeBinary, nullable=False)
 
-    def __init__(self, nombre, correo, cp, estado, municipio, colonia, rfc, telefono, contraseña, imagen, direccion):
+    def __init__(self, nombre, correo, cp, estado, municipio, colonia, rfc, telefono, contrasena, imagen, direccion):
         self.nombre = nombre
         self.correo = correo
         self.cp = cp
@@ -37,10 +38,10 @@ class Organizations(db.Model):
         self.telefono = telefono
         self.imagen = imagen
         self.direccion = direccion
-        self.contraseña = bcrypt.generate_password_hash(contraseña).decode('utf-8')
+        self.contrasena = bcrypt.generate_password_hash(contrasena).decode('utf-8')
 
-    def check_contraseña(self, contraseña):
-        return bcrypt.check_password_hash(self.contraseña, contraseña)
+    def check_contrasena(self, contrasena):
+        return bcrypt.check_password_hash(self.contrasena, contrasena)
     
     def __repr__(self):
         return f'<Organizations {self.nombre}>'

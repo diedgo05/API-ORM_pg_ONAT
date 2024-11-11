@@ -6,12 +6,14 @@ from src.routes.donationsRoutes import donacion_blueprint
 from src.routes.membershipRoutes import membresias_blueprint
 from src.routes.dipomexRoutes import dipomex_blueprint
 from src.models import db
+from flask_cors import CORS
 
 def create_app():
     app = Flask(__name__)
     app.config.from_object(config['development'])
     db.init_app(app)
     jwt = JWTManager(app)
+    CORS(app)
 
     app.register_blueprint(donacion_blueprint)
     app.register_blueprint(organizacion_blueprint)

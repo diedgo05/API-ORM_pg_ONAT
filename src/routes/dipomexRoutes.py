@@ -1,5 +1,6 @@
 from flask import Blueprint, request
 from src.controllers.dipomexController import get_cp
+from flask_cors import cross_origin
 
 dipomex_blueprint = Blueprint('dipomex', __name__)
 
