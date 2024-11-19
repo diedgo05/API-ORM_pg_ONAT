@@ -30,7 +30,6 @@ class Donations(db.Model):
     id_membresia = db.Column(db.Integer, ForeignKey(f'{schema_name}.membresia.id'), nullable=True)
     id_org = db.Column(db.Integer, ForeignKey(f'{schema_name}.organizations.id'), nullable=False)
 
-    #RELACIONES
     membresia = relationship('Membership', backref='donations', lazy=True)
     organization = relationship('Organizations', backref='donations', lazy=True)
 

@@ -1,9 +1,11 @@
-from flask import jsonify, request
+from flask import jsonify, request, send_file
 from src.models.organizations import Organizations
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 from src.models import db
-import base64;
-
+from config import drive_service
+from src.controllers.driveController import upload_to_drive, download_from_drive
+from io import BytesIO
+import tempfile, os
 
 # Modificación en crear una organización para permitir consultas en postman o thunderclient con form-data
 def crear_org():
@@ -17,24 +19,40 @@ def crear_org():
     rfc = request.form.get('rfc')
     telefono = request.form.get('telefono')
     contrasena = request.form.get('contrasena')
-    imagen = request.files.get('imagen')
+    imagen = request.form.get('imagen')
 
-    if not nombre :
+    if not nombre:
         return jsonify({"mensaje": "Faltan campos obligatorios"}), 400
-    
+
     if Organizations.query.filter_by(correo=correo).first():
-        return jsonify({"mensaje": "El correo ya esta registrado"}), 400
-    
-    if imagen:
-        imagen_data = imagen.read()
-    else:
+        return jsonify({"mensaje": "El correo ya está registrado"}), 400
+
+    if not imagen:
         return jsonify({"mensaje": "Falta la imagen"}), 400
+
+
+    nueva_org = Organizations(
+        nombre=nombre,
+        correo=correo,
+        cp=cp,
+        estado=estado,
+        municipio=municipio,
+        colonia=colonia,
+        direccion=direccion,
+        rfc=rfc,
+        telefono=telefono,
+        contrasena=contrasena,
+        imagen=imagen  
+    )
     
-    nueva_org = Organizations(nombre=nombre, correo=correo, cp=cp, estado=estado, rfc=rfc, telefono=telefono, contrasena=contrasena, direccion=direccion,colonia=colonia,municipio=municipio, imagen=imagen_data) 
     db.session.add(nueva_org)
     db.session.commit()
 
-    return jsonify({"mensaje": "Organización creada", "id": nueva_org.id, "correo": nueva_org.correo}), 201
+    return jsonify({
+        "mensaje": "Organización creada",
+        "id": nueva_org.id,
+        "imagen_drive_id": nueva_org.imagen
+    }), 201
 
 def login_organizacion(data):
     correo = data.get('correo')
@@ -53,28 +71,36 @@ def login_organizacion(data):
     access_token = create_access_token(identity=organizacion.id)
     return jsonify({"mensaje": "Inicio de sesión exitoso", "token": access_token}), 200
 
-@jwt_required()
+# @jwt_required()
 def obtener_organizaciones():
-    organizacion_id = get_jwt_identity()
-    organizacion = Organizations.query.get(organizacion_id)
+    try:
+        organizaciones = Organizations.query.all()  # Obtiene todas las organizaciones
+        if not organizaciones:
+            return jsonify({"mensaje": "No se encontraron organizaciones"}), 404
 
-    imagen_base64 = None
-    if organizacion.imagen:
-        imagen_base64 = base64.b64encode(organizacion.imagen).decode('utf-8')
+        resultado = []
 
-    if not organizacion:
-        return jsonify({"mensaje": "Organizaciones no encontradas"}), 404
-    return jsonify({
-        "id": organizacion.id,
-        "nombre": organizacion.nombre,
-        "correo": organizacion.correo,
-        "cp": organizacion.cp,
-        "estado": organizacion.estado,
-        "direccion": organizacion.direccion,
-        "rfc": organizacion.rfc,
-        "telefono": organizacion.telefono,
-        "imagen": imagen_base64
-                  }), 200
+        for organizacion in organizaciones:
+            respuesta = {
+                "id": organizacion.id,
+                "nombre": organizacion.nombre,
+                "correo": organizacion.correo,
+                "cp": organizacion.cp,
+                "estado": organizacion.estado,
+                "municipio": organizacion.municipio,
+                "colonia": organizacion.colonia,
+                "direccion": organizacion.direccion,
+                "rfc": organizacion.rfc,
+                "telefono": organizacion.telefono,
+                "imagen_url": f"/drive/download/{organizacion.imagen}" if organizacion.imagen else None
+            }
+
+            resultado.append(respuesta)
+
+        return jsonify(resultado), 200
+
+    except Exception as e:
+        return jsonify({"error": "Error procesando la solicitud", "detalle": str(e)}), 500
 
 @jwt_required()
 def actualizar_organizaciones(id, data):

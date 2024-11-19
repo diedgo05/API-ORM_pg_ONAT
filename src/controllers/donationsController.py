@@ -4,8 +4,12 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 from src.models import db
 from src.models.membership import Membership
 from src.models.donations import Donations 
+import resend
+import os
 
-@jwt_required()
+resend.api_key = os.environ["RESEND_API_KEY"]
+
+# @jwt_required()
 def crear_donacion(data):
     nombre = data.get('nombre')
     apellido_m = data.get('apellido_m')
@@ -17,13 +21,11 @@ def crear_donacion(data):
     id_membresia = data.get('id_membresia')
     id_org = data.get('id_org')
 
-
     if not nombre or not apellido_m or not apellido_p or not correo or not nacionalidad or not tipo_donacion or not id_org:
         return jsonify({"mensaje": "Faltan campos obligatorios"}), 400
 
     if Donations.query.filter_by(correo=correo).first():
         return jsonify({"mensaje": "El correo ya está registrado"}), 400
-
 
     if tipo_donacion == 'membresia':
         membresia = Membership.query.get(id_membresia)
@@ -44,12 +46,33 @@ def crear_donacion(data):
         id_membresia=id_membresia,
         id_org=id_org
     )
-    
+
     db.session.add(donacion)
     db.session.commit()
 
+
+    try:
+        params: resend.Emails.SendParams = {
+            "from": "Nutriendo A Todos <noreply@resend.dev>",
+            # SOLO SE PUEDEN ENVIAR A ESTE CORREO (POR EL MOMENTO)
+            "to": "233358@ids.upchiapas.edu.mx", 
+            "subject": "¡Gracias por tu donación!",
+            "html": f"""
+            <h1>Hola {nombre} {apellido_p},</h1>
+            <p>Queremos agradecerte sinceramente por tu generosa donación.</p>
+            <p>Tu apoyo nos ayuda a marcar una diferencia. Estamos muy agradecidos por tu contribución de ${cantidad}.</p>
+            <p>Gracias por ser parte de nuestra causa.</p>
+            <br>
+            <p>Atentamente,</p>
+            <p>El equipo de Nutriendo A Todos</p>
+            """
+        }
+        resend.Emails.send(params)
+    except Exception as e:
+        return jsonify({"mensaje": "Donación creada, pero no se pudo enviar el correo", "error": str(e)}), 500
+
     return jsonify({
-        "mensaje": "Donación creada",
+        "mensaje": "Donación creada y correo enviado",
         "id": donacion.id,
         "nombre": donacion.nombre,
         "apellido_m": donacion.apellido_m,
@@ -57,7 +80,7 @@ def crear_donacion(data):
         "correo": donacion.correo,
         "nacionalidad": donacion.nacionalidad,
         "cantidad": donacion.cantidad,
-        "tipo_donacion": donacion.tipo_donacion.value,
+        "tipo_donacion": donacion.tipo_donacion,
         "id_org": donacion.id_org
     }), 201
 

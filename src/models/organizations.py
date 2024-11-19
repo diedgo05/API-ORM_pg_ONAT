@@ -25,8 +25,8 @@ class Organizations(db.Model):
     rfc = db.Column(db.String(13), nullable=False, unique=True)
     telefono = db.Column(db.String(10), nullable=False, unique=True)
     contrasena = db.Column(db.String(200), nullable=False, unique=True)
-    imagen = db.Column(db.LargeBinary, nullable=False)
-
+    imagen = db.Column(db.String(100))
+    
     def __init__(self, nombre, correo, cp, estado, municipio, colonia, rfc, telefono, contrasena, imagen, direccion):
         self.nombre = nombre
         self.correo = correo
