@@ -11,3 +11,4 @@ def crear_membresia_ruta():
 @membresias_blueprint.route('/getM', methods=['GET'])
 def obtener_membresias_ruta():
     return obtener_membresias()
+

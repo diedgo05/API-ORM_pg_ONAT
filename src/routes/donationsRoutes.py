@@ -14,4 +14,5 @@ def obtener_donaciones_ruta():
 
 @donacion_blueprint.route('/donaciones/org/<int:org_id>', methods=['GET'])
 def obtener_donaciones_by_org(org_id):
-    return obtener_donaciones_by_org(org_id)
+    return obtener_donacionesByID_org(org_id)
+

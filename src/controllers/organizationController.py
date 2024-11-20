@@ -71,10 +71,10 @@ def login_organizacion(data):
     access_token = create_access_token(identity=organizacion.id)
     return jsonify({"mensaje": "Inicio de sesión exitoso", "token": access_token}), 200
 
-# @jwt_required()
+@jwt_required()
 def obtener_organizaciones():
     try:
-        organizaciones = Organizations.query.all()  # Obtiene todas las organizaciones
+        organizaciones = Organizations.query.all()  
         if not organizaciones:
             return jsonify({"mensaje": "No se encontraron organizaciones"}), 404
 
@@ -142,7 +142,6 @@ def actualizar_organizaciones(id, data):
         "imagen": organizacion.imagen.decode('utf-8') if organizacion.imagen else None  
     }), 200
 
-# Voy a crear este controlador, pero no se si es necesario (eliminar)
 @jwt_required()
 def eliminar_organizacion(id):
     organizacion = Organizations.query.get(id)
