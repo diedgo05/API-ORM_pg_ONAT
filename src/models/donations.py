@@ -6,6 +6,7 @@ from src.models import db
 from dotenv import load_dotenv
 import os
 from sqlalchemy import ForeignKey
+from sqlalchemy.orm import validates
 
 bcrypt = Bcrypt()
 load_dotenv()
@@ -32,6 +33,18 @@ class Donations(db.Model):
 
     membresia = relationship('Membership', backref='donations', lazy=True)
     organization = relationship('Organizations', backref='donations', lazy=True)
+
+    @validates('correo')
+    def validate_correo(self,key,correo):
+        if not correo or  '@' not in correo:
+            raise ValueError('El correo ingresado no es válido')
+        return correo
+
+    @validates('cantidad')
+    def validate_cantidad(self,key,cantidad):
+        if self.tipo_donacion == 'unica' and (cantidad is None or cantidad <= 0):
+            raise ValueError('La cantidad es obligatoria y tiene que ser mayor a 0')
+        return cantidad
 
     def __init__(self, nombre, apellido_m, apellido_p, correo, nacionalidad, cantidad, tipo_donacion, id_org, id_membresia=None):
         self.nombre = nombre

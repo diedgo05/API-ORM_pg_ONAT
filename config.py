@@ -5,6 +5,7 @@ from googleapiclient.discovery import build
 
 load_dotenv()
 
+# Credenciales para Google Drive
 SCOPES = ['https://www.googleapis.com/auth/drive.file']
 SERVICE_ACCOUNT_FILE = os.getenv('GOOGLE_CREDENTIALS_PATH')
 

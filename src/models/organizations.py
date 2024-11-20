@@ -3,6 +3,8 @@ from flask_bcrypt import Bcrypt
 from src.models import db
 from dotenv import load_dotenv
 import os
+from sqlalchemy.orm import validates
+import re
 
 bcrypt = Bcrypt()
 load_dotenv()
@@ -27,6 +29,27 @@ class Organizations(db.Model):
     contrasena = db.Column(db.String(200), nullable=False, unique=True)
     imagen = db.Column(db.String(100))
     
+    # Valida que "correo" utilice @ 
+    @validates('correo')
+    def validate_correo(self,key,correo):
+        if not correo or  '@' not in correo:
+            raise ValueError('El correo ingresado no es válido.')
+        return correo
+    
+    # Valida que "rfc" tenga 13 dígitos y convierte las letras a mayúsculas
+    @validates('rfc')
+    def validate_rfc(self, key, rfc):
+        if not re.match(r'^[A-ZÑ&]{3,4}\d{6}[A-Z0-9]{3}$', rfc.upper()):
+            raise ValueError("El RFC proporcionado no es válido.")
+        return rfc.upper()
+    
+    # Valida que "telefono" solo tenga 10 dígitos
+    @validates('telefono')
+    def validate_telefono(self, key, telefono):
+        if not re.match(r'^\d{10}$', telefono):
+            raise ValueError("El teléfono debe contener exactamente 10 dígitos.")
+        return telefono
+
     def __init__(self, nombre, correo, cp, estado, municipio, colonia, rfc, telefono, contrasena, imagen, direccion):
         self.nombre = nombre
         self.correo = correo

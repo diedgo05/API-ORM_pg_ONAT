@@ -9,7 +9,7 @@ import os
 
 resend.api_key = os.environ["RESEND_API_KEY"]
 
-# @jwt_required()
+@jwt_required()
 def crear_donacion(data):
     nombre = data.get('nombre')
     apellido_m = data.get('apellido_m')
@@ -53,7 +53,7 @@ def crear_donacion(data):
 
     try:
         params: resend.Emails.SendParams = {
-            "from": "Nutriendo A Todos <noreply@resend.dev>",
+            "from": "Organización Nutriendo A Todos <noreply@resend.dev>",
             # SOLO SE PUEDEN ENVIAR A ESTE CORREO (POR EL MOMENTO)
             "to": "233358@ids.upchiapas.edu.mx", 
             "subject": "¡Gracias por tu donación!",
@@ -84,6 +84,7 @@ def crear_donacion(data):
         "id_org": donacion.id_org
     }), 201
 
+
 @jwt_required()
 def obtener_donacion():
     org_id = get_jwt_identity()
@@ -102,3 +103,22 @@ def obtener_donacion():
         "cantidad": donaciones.cantidad,
         "id_org": donaciones.id_org
     }), 200
+
+@jwt_required()
+def obtener_donacionesByID_org(org_id):
+    donaciones = Donations.query.filter_by(id_org=org_id).all()
+
+    if not donaciones:
+        return jsonify({"mensaje": "No se encontraron donaciones para esta organización"}), 404
+
+    return jsonify([{
+        "id": donacion.id,
+        "nombre": donacion.nombre,
+        "apellido_m": donacion.apellido_m,
+        "apellido_p": donacion.apellido_p,
+        "correo": donacion.correo,
+        "nacionalidad": donacion.nacionalidad,
+        "cantidad": donacion.cantidad,
+        "tipo_donacion": donacion.tipo_donacion,
+        "id_org": donacion.id_org
+    } for donacion in donaciones]), 200
