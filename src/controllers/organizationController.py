@@ -92,7 +92,7 @@ def obtener_organizaciones():
                 "direccion": organizacion.direccion,
                 "rfc": organizacion.rfc,
                 "telefono": organizacion.telefono,
-                "imagen_url": f"/drive/download/{organizacion.imagen}" if organizacion.imagen else None
+                "imagen_url": organizacion.imagen
             }
 
             resultado.append(respuesta)

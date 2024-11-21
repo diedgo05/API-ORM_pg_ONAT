@@ -54,8 +54,8 @@ def crear_donacion(data):
     try:
         params: resend.Emails.SendParams = {
             "from": "Organización Nutriendo A Todos <noreply@resend.dev>",
-            # SOLO SE PUEDEN ENVIAR A ESTE CORREO (POR EL MOMENTO)
-            "to": "233358@ids.upchiapas.edu.mx", 
+            # SOLO SE PUEDEN ENVIAR A ESTE CORREO (POR EL MOMENTO) "233358@ids.upchiapas.edu.mx"
+            "to": [correo], 
             "subject": "¡Gracias por tu donación!",
             "html": f"""
             <h1>Hola {nombre} {apellido_p},</h1>
