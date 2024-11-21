@@ -1,7 +1,7 @@
 from flask import Blueprint, request
 from src.controllers.membershipController import crear_membresia,obtener_membresias
 
-membresias_blueprint = Blueprint('membresias', __name__)
+membresias_blueprint = Blueprint('membresias', __name__, url_prefix="/membresias")
 
 @membresias_blueprint.route('/addM', methods=['POST'])
 def crear_membresia_ruta():

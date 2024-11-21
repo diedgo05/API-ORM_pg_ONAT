@@ -1,7 +1,7 @@
 from flask import Blueprint, request
 from src.controllers.organizationController import crear_org, obtener_organizaciones, login_organizacion, actualizar_organizaciones, eliminar_organizacion
 
-organizacion_blueprint = Blueprint('organizaciones', __name__)
+organizacion_blueprint = Blueprint('organizaciones', __name__, url_prefix="/organizaciones")
 
 @organizacion_blueprint.route('/crear_org', methods=['POST'])
 def crear_organizacion_ruta():

@@ -1,7 +1,7 @@
 from flask import Blueprint, request
 from src.controllers.donationsController import crear_donacion, obtener_donacion,obtener_donacionesByID_org
 
-donacion_blueprint = Blueprint('donaciones', __name__)
+donacion_blueprint = Blueprint('donaciones', __name__, url_prefix="/donaciones")
 
 @donacion_blueprint.route('/donaciones', methods=['POST'])
 def crear_donacion_ruta():
