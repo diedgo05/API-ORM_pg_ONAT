@@ -79,9 +79,8 @@ def obtener_organizaciones():
             return jsonify({"mensaje": "No se encontraron organizaciones"}), 404
 
         resultado = []
-
         for organizacion in organizaciones:
-            respuesta = {
+            resultado.append({
                 "id": organizacion.id,
                 "nombre": organizacion.nombre,
                 "correo": organizacion.correo,
@@ -92,10 +91,8 @@ def obtener_organizaciones():
                 "direccion": organizacion.direccion,
                 "rfc": organizacion.rfc,
                 "telefono": organizacion.telefono,
-                "imagen_url": organizacion.imagen
-            }
-
-            resultado.append(respuesta)
+                "imagen": organizacion.imagen
+            })
 
         return jsonify(resultado), 200
 
