@@ -55,22 +55,30 @@ def crear_org():
     }), 201
 
 def login_organizacion(data):
-    correo = data.get('correo')
-    contrasena = data.get('contrasena')
+    try:
+        correo = data.get('correo')
+        contrasena = data.get('contrasena')
+        
+        if not correo or not contrasena:
+            return jsonify({"mensaje": "Faltan campos obligatorios"}), 400
+        
+        organizacion = Organizations.query.filter_by(correo=correo).first()
+
+        if not organizacion:
+            return jsonify({"mensaje": "Credenciales inválidas"}), 401
+        if not organizacion.check_contrasena(contrasena):
+            return jsonify({"mensaje": "Credenciales inválidas"}), 401
+
+        # Agregar log de depuración
+        print(f"Usuario autenticado: {organizacion.id}, correo: {correo}")
+
+        # Generar token
+        access_token = create_access_token(identity=str(organizacion.id))
+        return jsonify({"mensaje": "Inicio de sesión exitoso", "token": access_token}), 200
     
-    if not correo or not contrasena:
-        return jsonify({"mensaje": "Faltan campos obligatorios"}), 400
-    
-    organizacion = Organizations.query.filter_by(correo=correo).first()
-
-    if not organizacion:
-        return jsonify({"mensaje": "Credenciales inválidas"}), 401
-    if not organizacion.check_contrasena(contrasena):
-        return jsonify({"mensaje": "Credenciales inválidas"}), 401
-
-    access_token = create_access_token(identity=str(organizacion.id))
-    return jsonify({"mensaje": "Inicio de sesión exitoso", "token": access_token}), 200
-
+    except Exception as e:
+        print(f"Error en login_organizacion: {str(e)}")
+        return jsonify({"error": "Error en el servidor", "detalle": str(e)}), 500
 @jwt_required()
 def obtener_organizaciones():
     try:
