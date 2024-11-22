@@ -68,7 +68,7 @@ def login_organizacion(data):
     if not organizacion.check_contrasena(contrasena):
         return jsonify({"mensaje": "Credenciales inválidas"}), 401
 
-    access_token = create_access_token(identity=organizacion.id)
+    access_token = create_access_token(identity=str(organizacion.id))
     return jsonify({"mensaje": "Inicio de sesión exitoso", "token": access_token}), 200
 
 @jwt_required()
