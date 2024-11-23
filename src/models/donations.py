@@ -24,7 +24,7 @@ class Donations(db.Model):
     nombre = db.Column(db.String(50), nullable=False)
     apellido_m = db.Column(db.String(50), nullable=False)
     apellido_p = db.Column(db.String(50), nullable=False)
-    correo = db.Column(db.String(50), nullable=False, unique=True)
+    correo = db.Column(db.String(50), nullable=False)
     nacionalidad = db.Column(db.String(50), nullable=False)
     cantidad = db.Column(db.Numeric(10, 2), nullable=False)
     tipo_donacion = db.Column(Enum(TipoDonacion), nullable=False)

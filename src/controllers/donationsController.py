@@ -24,9 +24,6 @@ def crear_donacion(data):
     if not nombre or not apellido_m or not apellido_p or not correo or not nacionalidad or not tipo_donacion or not id_org:
         return jsonify({"mensaje": "Faltan campos obligatorios"}), 400
 
-    if Donations.query.filter_by(correo=correo).first():
-        return jsonify({"mensaje": "El correo ya está registrado"}), 400
-
     if tipo_donacion == 'membresia':
         membresia = Membership.query.get(id_membresia)
         if not membresia:
@@ -46,7 +43,6 @@ def crear_donacion(data):
         id_membresia=id_membresia,
         id_org=id_org
     )
-
     db.session.add(donacion)
     db.session.commit()
 
@@ -55,7 +51,7 @@ def crear_donacion(data):
         params: resend.Emails.SendParams = {
             "from": "Organización Nutriendo A Todos <noreply@resend.dev>",
             # SOLO SE PUEDEN ENVIAR A ESTE CORREO (POR EL MOMENTO) "233358@ids.upchiapas.edu.mx"
-            "to": [correo], 
+            "to": "233358@ids.upchiapas.edu.mx", 
             "subject": "¡Gracias por tu donación!",
             "html": f"""
             <h1>Hola {nombre} {apellido_p},</h1>
@@ -72,37 +68,41 @@ def crear_donacion(data):
         return jsonify({"mensaje": "Donación creada, pero no se pudo enviar el correo", "error": str(e)}), 500
 
     return jsonify({
-        "mensaje": "Donación creada y correo enviado",
         "id": donacion.id,
         "nombre": donacion.nombre,
         "apellido_m": donacion.apellido_m,
         "apellido_p": donacion.apellido_p,
         "correo": donacion.correo,
         "nacionalidad": donacion.nacionalidad,
-        "cantidad": donacion.cantidad,
-        "tipo_donacion": donacion.tipo_donacion,
+        "cantidad": float(donacion.cantidad),  # Convertir Decimal a float
+        "tipo_donacion": donacion.tipo_donacion.value,  # Obtener el valor del Enum
+        "id_membresia": donacion.id_membresia,
         "id_org": donacion.id_org
     }), 201
 
 
 @jwt_required()
 def obtener_donacion():
-    org_id = get_jwt_identity()
-    donaciones = Donations.query.filter_by(id_org=org_id).all()
+    try:
+        donaciones = Donations.query.all()
+        if not donaciones:
+            return jsonify({"mensaje": "No se encontraron donaciones"}), 404
 
-    if not donaciones:
-        return jsonify({"mensaje": "No se encontraron donaciones"}), 404
-
-    return jsonify({
-        "id": donaciones.id,
-        "nombre": donaciones.nombre,
-        "apellido_m": donaciones.apellido_m,
-        "apellido_p": donaciones.apellido_p,
-        "correo": donaciones.correo,
-        "nacionalidad": donaciones.nacionalidad,
-        "cantidad": donaciones.cantidad,
-        "id_org": donaciones.id_org
-    }), 200
+        resultado = []
+        for donacion in donaciones:
+            resultado.append({
+                "id": donacion.id,
+                "nombre": donacion.nombre,
+                "apellido_m": donacion.apellido_m,
+                "apellido_p": donacion.apellido_p,
+                "correo": donacion.correo,
+                "nacionalidad": donacion.nacionalidad,
+                "cantidad": donacion.cantidad,
+                "id_org": donacion.id_org
+            })
+        return jsonify(resultado), 200
+    except Exception as e:
+        return jsonify({"error":" Error procesando la solicitud", "detalle": str(e)}), 500
 
 @jwt_required()
 def obtener_donacionesByID_org(org_id):
@@ -118,7 +118,7 @@ def obtener_donacionesByID_org(org_id):
         "apellido_p": donacion.apellido_p,
         "correo": donacion.correo,
         "nacionalidad": donacion.nacionalidad,
-        "cantidad": donacion.cantidad,
-        "tipo_donacion": donacion.tipo_donacion,
+        "cantidad": float(donacion.cantidad),
+        "tipo_donacion": donacion.tipo_donacion.value,
         "id_org": donacion.id_org
     } for donacion in donaciones]), 200

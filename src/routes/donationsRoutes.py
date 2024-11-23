@@ -12,7 +12,7 @@ def crear_donacion_ruta():
 def obtener_donaciones_ruta():
     return obtener_donacion()
 
-@donacion_blueprint.route('/donaciones/org/<int:org_id>', methods=['GET'])
+@donacion_blueprint.route('/org/<int:org_id>', methods=['GET'])
 def obtener_donaciones_by_org(org_id):
     return obtener_donacionesByID_org(org_id)
 

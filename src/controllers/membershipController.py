@@ -41,4 +41,3 @@ def obtener_membresias():
         "costo": membership.costo ,
         "contenido": membership.checar_contenido()
     }for membership in memberships]), 200
-

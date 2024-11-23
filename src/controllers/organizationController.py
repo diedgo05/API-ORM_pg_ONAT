@@ -109,9 +109,8 @@ def obtener_organizaciones():
 
 @jwt_required()
 def actualizar_organizaciones(id, data):
-    org_id = get_jwt_identity()
     organizacion = Organizations.query.get(id)
-    if org_id != id:
+    if not id:
         return jsonify({"mensaje":"No se puede editar esta organización"}), 403
     if not organizacion:
         return jsonify({"mensaje":" Organización benéfica no encontrada"}),404
@@ -144,7 +143,7 @@ def actualizar_organizaciones(id, data):
         "direccion": organizacion.direccion,
         "rfc": organizacion.rfc,
         "telefono": organizacion.telefono,
-        "imagen": organizacion.imagen.decode('utf-8') if organizacion.imagen else None  
+        "imagen": organizacion.imagen
     }), 200
 
 @jwt_required()
