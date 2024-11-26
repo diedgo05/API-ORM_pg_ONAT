@@ -18,7 +18,6 @@ def upload_drive():
     file_path = os.path.join(temp_dir, file_name)
     file.save(file_path)
     
-
     file_id = upload_to_drive(file_path, file_name)
     google_drive_url = file_id
     #f"https://drive.google.com/uc?id={file_id}"

@@ -79,7 +79,7 @@ def login_organizacion(data):
     except Exception as e:
         print(f"Error en login_organizacion: {str(e)}")
         return jsonify({"error": "Error en el servidor", "detalle": str(e)}), 500
-@jwt_required()
+    
 def obtener_organizaciones():
     try:
         organizaciones = Organizations.query.all()  
