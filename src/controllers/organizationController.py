@@ -77,7 +77,7 @@ def login_organizacion(data):
     access_token = create_access_token(identity=organizacion.id,)
     return jsonify({"mensaje": "Inicio de sesión exitoso", "token": access_token}), 200
 
-# @jwt_required()
+#     
 def obtener_organizaciones():
     # organizacion_id = get_jwt_identity()
     organizaciones = Organizations.query.all()
