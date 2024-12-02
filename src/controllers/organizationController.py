@@ -1,6 +1,6 @@
 from flask import jsonify, request
 from src.models.organizations import Organizations
-from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, verify_jwt_in_request
 from src.models import db
 from google.cloud import storage
 
@@ -73,7 +73,8 @@ def login_organizacion(data):
     if not organizacion.check_contraseña(contraseña):
         return jsonify({"mensaje": "Credenciales inválidas"}), 401
 
-    access_token = create_access_token(identity=organizacion.id,)
+    # access_token = create_access_token(identity=organizacion.id,)
+    access_token = create_access_token(identity=str(organizacion.id))  # Convertir a string
     return jsonify({"mensaje": "Inicio de sesión exitoso", "token": access_token}), 200
 
 
@@ -159,15 +160,15 @@ def eliminar_organizacion(id):
     db.session.commit()
     return jsonify({"mensaje":"Organización eliminada correctamente"}), 200
 
-@jwt_required()  # Protege esta ruta, requiere un token válido
+#@jwt_required()  # Protege esta ruta, requiere un token válido
 def validarToken():
     try:
+        verify_jwt_in_request();
         # Si el token es válido, esta línea se ejecutará
         user_identity = get_jwt_identity()  # Obtiene la información del token (por ejemplo, el ID del usuario)
-        
+        print(get_jwt_identity())
         # Respuesta con los datos del token
-        return jsonify({
-            'data':user_identity
+        return jsonify({ 
         }), 200
 
     except Exception as e:
