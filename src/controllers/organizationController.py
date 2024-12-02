@@ -23,14 +23,14 @@ def crear_org():
     rfc = request.form.get('rfc')
 
     telefono = request.form.get('telefono')
-    contraseña = request.form.get('contrasena')
+    contrasena = request.form.get('contrasena')
     imagen = request.files.get('imagen')
     municipio = request.form.get('municipio')
     colonia = request.form.get('colonia')
 
     print(request.form)
     
-    if not nombre or not correo or not estado or not rfc or not telefono or not contraseña:
+    if not nombre or not correo or not estado or not rfc or not telefono or not contrasena:
         return jsonify({"mensaje": "Faltan campos obligatorios" }), 400
     
     if Organizations.query.filter_by(correo=correo).first():
@@ -49,7 +49,7 @@ def crear_org():
     colonia=colonia,
     rfc=rfc,
     telefono=telefono,
-    contraseña=contraseña,
+    contrasena=contrasena,
     direccion=direccion,
     imagen=imagen_url
     ) 
@@ -62,22 +62,22 @@ def crear_org():
 
 def login_organizacion(data):
     correo = data.get('correo')
-    contraseña = data.get('contrasena')
+    contrasena = data.get('contrasena')
     
-    if not correo or not contraseña:
+    if not correo or not contrasena:
         return jsonify({"mensaje": "Faltan campos obligatorios"}), 400
     
     organizacion = Organizations.query.filter_by(correo=correo).first()
 
     if not organizacion:
         return jsonify({"mensaje": "Credenciales inválidas"}), 401
-    if not organizacion.check_contraseña(contraseña):
+    if not organizacion.check_contraseña(contrasena):
         return jsonify({"mensaje": "Credenciales inválidas"}), 401
 
     access_token = create_access_token(identity=organizacion.id,)
     return jsonify({"mensaje": "Inicio de sesión exitoso", "token": access_token}), 200
 
-#     
+# @jwt_required()
 def obtener_organizaciones():
     # organizacion_id = get_jwt_identity()
     organizaciones = Organizations.query.all()
