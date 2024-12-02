@@ -29,6 +29,7 @@ def crear_donacion(data):
     fecha_expiracion = tarjeta.get('fecha_expiracion')
 
     if not nombre or not apellido_m or not apellido_p or not correo or not nacionalidad or not tipo_donacion or not id_org:
+        print(data)
         return jsonify({"mensaje": "Faltan campos obligatorios"}), 400
 
     if tipo_donacion == 'membresia':
