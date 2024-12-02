@@ -28,7 +28,6 @@ def crear_org():
     municipio = request.form.get('municipio')
     colonia = request.form.get('colonia')
 
-    print(request.form)
     
     if not nombre or not correo or not estado or not rfc or not telefono or not contrasena:
         return jsonify({"mensaje": "Faltan campos obligatorios" }), 400
@@ -62,16 +61,16 @@ def crear_org():
 
 def login_organizacion(data):
     correo = data.get('correo')
-    contrasena = data.get('contrasena')
+    contraseña = data.get('contrasena')
     
-    if not correo or not contrasena:
+    if not correo or not contraseña:
         return jsonify({"mensaje": "Faltan campos obligatorios"}), 400
     
     organizacion = Organizations.query.filter_by(correo=correo).first()
 
     if not organizacion:
         return jsonify({"mensaje": "Credenciales inválidas"}), 401
-    if not organizacion.check_contraseña(contrasena):
+    if not organizacion.check_contraseña(contraseña):
         return jsonify({"mensaje": "Credenciales inválidas"}), 401
 
     access_token = create_access_token(identity=organizacion.id,)
@@ -168,7 +167,7 @@ def validarToken():
         
         # Respuesta con los datos del token
         return jsonify({
-            
+            'data':user_identity
         }), 200
 
     except Exception as e:
