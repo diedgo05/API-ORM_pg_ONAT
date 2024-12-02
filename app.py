@@ -24,8 +24,8 @@ def create_app():
     # Habilitar CORS para todos los recursos
     CORS(app, resources={
     r"/*": {
-        "origins": "http://localhost:4200",
-        "methods": ["GET", "POST", "PUT", "DELETE"],
+        "origins": "/*",
+        "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
         "allow_headers": ["Content-Type", "Authorization"]
     }
 })
@@ -42,6 +42,7 @@ def create_app():
     app.register_blueprint(organizacion_blueprint)
     app.register_blueprint(membresias_blueprint)
     app.register_blueprint(donacion_blueprint)
+    app.register_blueprint(drive_bp)
 
 
 
