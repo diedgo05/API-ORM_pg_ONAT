@@ -40,6 +40,10 @@ def create_app():
         return response
 
     app.register_blueprint(organizacion_blueprint)
+    app.register_blueprint(membresias_blueprint)
+    app.register_blueprint(donacion_blueprint)
+
+
 
     return app
 

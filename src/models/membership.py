@@ -14,10 +14,10 @@ class Membership(db.Model):
     __tablename__ = 'membresia'
     __table_args__ = { 'schema': schema_name}
 
-    id = db.Column(db.Integer, primary_key = True)
+    id = db.Column(db.Integer, primary_key = True, autoincrement=True)
     plan = db.Column(db.String(50), nullable = True)
     costo = db.Column(db.Numeric(10,2), nullable = True)
-    contenido = db.Column(JSONB, nullable = True)    
+    contenido = db.Column(db.String(500), nullable = True)    
 
     def __init__(self, plan, costo, contenido):
         self.plan = plan

@@ -33,7 +33,9 @@ def obtener_membresias():
     
     if not memberships:
         return jsonify({"mensaje": "Membresías no encontrado"}), 404
-    
+
+    for membership in memberships:
+        print(membership)
 
     return jsonify([{
         "id": membership.id,
@@ -41,3 +43,17 @@ def obtener_membresias():
         "costo": membership.costo ,
         "contenido": membership.checar_contenido()
     }for membership in memberships]), 200
+
+
+def obtener_membresias_por_id(id):
+    membresia = Membership.query.get(id)
+
+    if not membresia:
+        return jsonify({"mensaje: Membresia no encontrada"}), 404
+    
+    return jsonify({
+        "id": membresia.id,
+        "plan": membresia.plan,
+        "costo": membresia.costo ,
+        "contenido": membresia.checar_contenido()
+    }), 200

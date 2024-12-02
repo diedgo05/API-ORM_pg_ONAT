@@ -6,6 +6,7 @@ organizacion_blueprint = Blueprint('organizaciones', __name__, url_prefix="/orga
 @organizacion_blueprint.route('/crear_org', methods=['POST'])
 def crear_organizacion_ruta():
     return crear_org()
+
 @organizacion_blueprint.route('/obtenerOrgPorId/<string:id>', methods=['Post'])
 def obtener_organizacion_por_id():
      return  obtener_organizacion_por_id(id)
