@@ -26,7 +26,7 @@ class Organizations(db.Model):
     direccion = db.Column(db.String(100), nullable=False)
     rfc = db.Column(db.String(13), nullable=False, unique=True)
     telefono = db.Column(db.String(10), nullable=False, unique=True)
-    contraseña = db.Column(db.String(200), nullable=False, unique=True)
+    contrasena = db.Column(db.String(200), nullable=False, unique=True)
     imagen = db.Column(db.String(100))
     
     # Valida que "correo" utilice @ 
@@ -50,7 +50,7 @@ class Organizations(db.Model):
             raise ValueError("El teléfono debe contener exactamente 10 dígitos.")
         return telefono
 
-    def __init__(self, nombre, correo, estado,cp, municipio, colonia, rfc, telefono, contraseña, direccion, imagen):
+    def __init__(self, nombre, correo, estado,cp, municipio, colonia, rfc, telefono, contrasena, direccion, imagen):
         self.nombre = nombre
         self.correo = correo
         self.cp = cp
@@ -61,10 +61,10 @@ class Organizations(db.Model):
         self.telefono = telefono
         self.imagen = imagen
         self.direccion = direccion
-        self.contraseña = bcrypt.generate_password_hash(contraseña).decode('utf-8')
+        self.contrasena = bcrypt.generate_password_hash(contrasena).decode('utf-8')
 
-    def check_contraseña(self, contraseña):
-        return bcrypt.check_password_hash(self.contraseña, contraseña)
+    def check_contraseña(self, contrasena):
+        return bcrypt.check_password_hash(self.contrasena, contrasena)
     
     def __repr__(self):
         return f'<Organizations {self.nombre}>'
